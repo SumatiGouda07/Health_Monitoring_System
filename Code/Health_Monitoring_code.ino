@@ -6,16 +6,25 @@
 #include <DallasTemperature.h>
 #include "DHT.h" 
 
+
+//Here we defined the DHT sensor type, its signal pin interfaced with NodeMCU. Similarly, Dallas Temperature DS18B20 sensor pin and reporting period of 1000ms for MAX30100 sensor is also defined.
+
 #define DHTTYPE DHT22 
 #define DHTPIN 18
 #define DS18B20 5
 #define REPORTING_PERIOD_MS     1000
+
+// Five different variables (temperature, humidity, BPM, SpO2, and bodytemperature) are also defined.
  
 float temperature, humidity, BPM, SpO2, bodytemperature;
+
+// Change your WiFi Network Credentials like WiFi SSID and Password here.
  
 /*Put your SSID & Password*/
-const char* ssid = "realme X7 Max";  // Enter SSID here
-const char* password = "suliasg...'''";  //Enter Password here
+const char* ssid = "SSID";  // Enter SSID here
+const char* password = "Password";  //Enter Password here
+
+//Initialize DHT sensor, Pulse Oximeter sensor, and DS18B20 Dallas Temperature sensor.
  
 DHT dht(DHTPIN, DHTTYPE);; 
 PulseOximeter pox;
@@ -23,8 +32,11 @@ uint32_t tsLastReport = 0;
 OneWire oneWire(DS18B20);
 DallasTemperature sensors(&oneWire);
  
- 
-WebServer server(80);             
+ //Start the webserver on ESP32 module on port 80.
+
+WebServer server(80);   
+
+//Begin serial debugging at a baud rate of 115200. Define ESP32 pin (GPIO 19) as output. Test the DHT 22 sensor and connect your microcontroller to the Wi-Fi network. After a successful connection, it will provide your IP address. Finally, Start the HTTP server and Initialize the MAX30100 sensor for testing and print results on the serial monitor.
  
 void onBeatDetected()
 {
@@ -73,6 +85,11 @@ void setup() {
   // Register a callback for the beat detection
  
 }
+
+
+//Request sensor readings from all the sensors using ESP32 and print those five parameters (temperature, humidity, BPM, Sp02, and body temperature) on the serial monitor.
+
+
 void loop() {
   server.handleClient();
   pox.update();
@@ -116,6 +133,7 @@ void loop() {
   }
   
 }
+// If there is a successful connection, we can send these parameters to the ESP32 local webserver.
  
 void handle_OnConnect() {
   
@@ -125,9 +143,13 @@ void handle_OnConnect() {
 void handle_NotFound(){
   server.send(404, "text/plain", "Not found");
 }
- 
-  String SendHTML(float temperature, float humidity, float BPM, float SpO2, float bodytemperature) {
+
+//Uing an html string variable to display patient health monitoring parameters on the webpage dynamically
+
+ String SendHTML(float temperature, float humidity, float BPM, float SpO2, float bodytemperature) {
   String html = "<!DOCTYPE html>";
+
+  //html web page is made responsive in any web browser.
 html += "<html>";
 html += "<head>";
 html += "<title>Patient Health Monitoring</title>";
@@ -152,6 +174,7 @@ html += ".units { font-size: 1.2rem;}";
 html += "hr { height: 1px; color: #eee; background-color: #eee; border: none;}";
 html += "</style>";
 
+//Ajax code makes our webpage dynamic,In every second new data is upload to the webserver.
 //Ajax Code Start
   html += "<script>\n";
   html += "setInterval(loadDoc,1000);\n";
